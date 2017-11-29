@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.basaki</groupId>
+    <artifactId>spring-jersey-swagger-example</artifactId>
+    <version>1.0.0</version>
+    <name>spring-jersey-swagger-example</name>
+
+    <properties>
+        <aspect.version>1.8.10</aspect.version>
+        <jackson.version>2.8.8</jackson.version>
+        <java.version>1.8</java.version>
+        <junit.version>4.12</junit.version>
+        <lombok.version>1.16.16</lombok.version>
+        <mockito.version>1.10.19</mockito.version>
+        <spring.boot.version>1.5.8.RELEASE</spring.boot.version>
+        <swagger.version>2.7.0</swagger.version>
+        <swagger.ui.version>3.5.0</swagger.ui.version>
+        <swagger.jersey2.version>1.5.17</swagger.jersey2.version>
+    </properties>
+
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-dependencies</artifactId>
+                    <version>${spring.boot.version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+            </dependencies>
+        </dependencyManagement>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jersey</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>4.3.12.RELEASE</version>
+        </dependency>
+
+        <!-- Spring Data -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.3.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.jersey2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <id>swagger-ui</id>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>
+                                https://github.com/swagger-api/swagger-ui/archive/v${swagger.ui.version}.tar.gz
+                            </url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--            <plugin>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>2.6</version>
+                            <executions>
+                                <execution>
+                                    <id>copy-resources</id>
+                                    <phase>validate</phase>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <configuration>
+                                        <outputDirectory>"${project.build.directory}/classes/config</outputDirectory>
+                                        <resources>
+                                            <controller>
+                                                <directory>
+                                                    ${project.build.directory}/swagger-ui-${swagger.ui.version}/dist
+                                                </directory>
+                                            </controller>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <sequential>
+                                    <echo>Copy Files</echo>
+                                    <copy todir="${project.build.directory}/classes/static">
+                                        <fileset
+                                                dir="${project.build.directory}/swagger-ui-${swagger.ui.version}/dist">
+                                            <include name="**"/>
+                                        </fileset>
+                                    </copy>
+                                    <echo>Renaming 'index.html' to 'swagger-ui.html'</echo>
+                                    <move file="${project.build.directory}/classes/static/index.html"
+                                          tofile="${project.build.directory}/classes/static/swagger-ui.html"/>
+                                    <echo>Replace petstore swagger.json link</echo>
+                                    <replace token="http://petstore.swagger.io/v2/swagger.json"
+                                             value="/swagger.json"
+                                             dir="${project.build.directory}/classes/static">
+                                        <include name="swagger-ui.html"/>
+                                    </replace>
+                                </sequential>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.basaki.Application</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

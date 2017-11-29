@@ -1,0 +1,34 @@
+# use a random unassigned HTTP port by scanning for free port
+server:
+  port: 8080
+
+
+# For Spring Actuator /info endpoint
+info:
+    artifact: spring-jersey-swagger-example
+    name: spring-jersey-swagger-example
+    description: Spring Jersey Swagger Example
+    version: 1.0.0
+
+datasource:
+  validationQuery: SELECT 1
+  initialSize: 1
+  maxActive: 3
+  testWhileIdle: true
+  testOnBorrow: true
+
+jpa:
+  show-sql: true
+  format_sql: true
+  properties:
+    org:
+      hibernate:
+        flushMode: AUTO
+
+#logging:
+#  level:
+#    org.springframework: DEBUG
+
+spring:
+  jersey:
+    type: filter
