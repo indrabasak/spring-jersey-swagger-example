@@ -1,6 +1,5 @@
 [![Build Status][travis-badge]][travis-badge-url]
 
-![](./img/x.png)
 
 Spring Boot with Jersey and Swagger Example
 =============================================
@@ -18,7 +17,7 @@ mvn clean install
 To run the application fromm command line,
 
 ```
-java -jar target/springfox-ui-from-json-example-1.0.0.jar
+java -jar target/spring-jersey-swagger-example-1.0.0.jar
 ```
 
 ### Access Swagger Endpoints
@@ -26,6 +25,7 @@ java -jar target/springfox-ui-from-json-example-1.0.0.jar
 ##### Swagger UI
 You can view the Swagger UI at `http://localhost:8080/swagger-ui.html`.
 
+![](./img/swagger-ui.png)
 
 ##### Swagger JSON
 You can view Swagger JSON doc at `http://localhost:8080/swagger.json`
